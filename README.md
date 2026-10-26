@@ -40,11 +40,58 @@ The connector uses the authenticated CLI session and queries standard Product2 f
 
 **Important:** standard Product2 does not universally contain dependency or incompatibility rules. Provide those through a reviewed JSON overlay or adapt the connector to the actual Industries CPQ/EPC schema in your org. This repository does not assume one universal Vlocity schema, and it does not write to Salesforce.
 
-## 4. Copado Agentia
-The `agentia-plugin/` folder is an integration starter, not a claim that a plugin is already installed or verified. Install the current Agentia CLI using Copado's official instructions, scaffold a plugin with the official generator, and port the validator command into that generated plugin. Verify the CLI command in your authenticated Agentia environment before describing it as a working Agentia integration. See `docs/AGENTIA_INTEGRATION.md`.
 
-## Security / limitations
-- Salesforce integration is read-only; no records or metadata are modified.
-- Only standard Product2 fields are queried by default.
-- This does not directly read Industries CPQ/EPC catalog relationships until mapped to the actual org schema.
-- No credentials, customer records, or org snapshots should be committed to a public repository.
+## 4. Copado Agentia CLI plugin
+
+This repository includes the source for a custom Agentia CLI plugin in `agentia-plugin/`. The plugin exposes the command `agentia cpq validate` and invokes the CPQ Guardian Python validator.
+
+### Plugin capabilities
+- Accepts a change-request JSON file.
+- Validates against the local sample catalog or reads Product2 from Salesforce through an authenticated Salesforce CLI session.
+- Supports an optional rules overlay for required and incompatible products.
+- Prints the validator's JSON findings and returns a non-zero exit status when validation fails.
+- Does not create or update Salesforce records.
+
+### Build and link locally
+
+Requirements: Node.js, npm, the Copado Agentia CLI, Python, and Salesforce CLI for Salesforce mode.
+
+From the repository root, build the plugin:
+
+```powershell
+cd agentia-plugin
+npm ci
+npm.cmd run build
+agentia plugins link .
+cd ..
+```
+
+If `agentia` is not on your PATH in PowerShell, use the full path to your installed `agentia.cmd` executable.
+
+### Example commands
+
+Run these commands from the repository root after linking the plugin:
+
+```powershell
+agentia cpq validate --change sample_data/change_request_live_valid.json --salesforce --target-org GuardianDev
+```
+
+Validate a request containing an unknown product:
+
+```powershell
+agentia cpq validate --change sample_data/change_request_live_invalid.json --salesforce --target-org GuardianDev
+```
+
+Test a product incompatibility using the rules overlay:
+
+```powershell
+agentia cpq validate --change sample_data/change_request_live_conflict.json --salesforce --target-org GuardianDev --rules sample_data/salesforce_rules_overlay.json
+```
+
+The valid request should pass if the referenced products exist and are active in the connected org. Invalid requests are expected to return a non-zero exit status when findings are detected.
+
+### Integration boundaries
+
+The local plugin command has been built and exercised in a development environment. It invokes Python and Salesforce CLI on the local machine; it is not evidence that Copado-hosted Headless authentication, a hosted Agentia pipeline, or a production deployment has been configured. Users must build and link the plugin in their own supported Agentia environment.
+
+The Salesforce connector queries standard `Product2` fields and is read-only. Product dependencies and incompatibilities are supplied through a rules overlay unless explicitly mapped to the target org's Industries CPQ/EPC schema. See `docs/AGENTIA_INTEGRATION.md`.
