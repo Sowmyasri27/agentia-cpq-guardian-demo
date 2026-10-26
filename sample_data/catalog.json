@@ -1,0 +1,10 @@
+{
+  "source": "sample",
+  "products": [
+    {"id":"HOME_STARTER","name":"Home Starter Bundle","active":true,"requires":["BROADBAND_MODEM"],"incompatible_with":[]},
+    {"id":"BROADBAND_MODEM","name":"Broadband Modem","active":true,"requires":[],"incompatible_with":[]},
+    {"id":"BASIC_VIDEO","name":"Basic Video","active":true,"requires":[],"incompatible_with":["PREMIUM_VIDEO"]},
+    {"id":"PREMIUM_VIDEO","name":"Premium Video","active":true,"requires":[],"incompatible_with":["BASIC_VIDEO"]},
+    {"id":"VOICE_ADDON","name":"Voice Add-on","active":true,"requires":[],"incompatible_with":[]}
+  ]
+}

@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.report.json
+*-report.json
+product-snapshot.json
+.env
+.sf/
+.sfdx/
+node_modules/

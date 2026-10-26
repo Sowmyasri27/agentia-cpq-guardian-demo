@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "HOME_STARTER": {"requires": ["BROADBAND_MODEM"], "incompatible_with": []},
+    "BASIC_VIDEO": {"requires": [], "incompatible_with": ["PREMIUM_VIDEO"]},
+    "PREMIUM_VIDEO": {"requires": [], "incompatible_with": ["BASIC_VIDEO"]}
+  }
+}
